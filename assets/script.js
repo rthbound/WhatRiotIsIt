@@ -1,53 +1,90 @@
-(function (riot) {
-  riot.tag('imagery', '',function (opts) {
+riot.tag('imagery', '',function (opts) {
+  this.utcDate = getTimes().utcDate;
+  this.utcTime = getTimes().utcTime;
+
+  var img = imageUrl(colors.selected[0].imageString, colors.selected[0].view, this.utcDate, this.utcTime)
+  cycleImages(img, colors.selected[0].imageString, this)
+
+  this.tick = (function () {
     this.utcDate = getTimes().utcDate;
     this.utcTime = getTimes().utcTime;
 
-    var img = "url(http://api.usno.navy.mil/imagery/earth.png?view=full&date=" + this.utcDate + "&time=" + this.utcTime + ")";
+    var img = imageUrl(colors.selected[0].imageString, colors.selected[0].view, this.utcDate, this.utcTime)
 
-    cycleImages(img)
+    cycleImages(img, colors.selected[0].imageString, this)
+  }).bind(this);
 
-    this.tick = (function () {
-      this.utcDate = getTimes().utcDate;
-      this.utcTime = getTimes().utcTime;
-      var img = "url(http://api.usno.navy.mil/imagery/earth.png?view=full&date=" + this.utcDate + "&time=" + this.utcTime + ")";
+  var timer = setInterval(this.tick, 60000);
 
-      cycleImages(img)
-    }).bind(this);
+  this.on('unmount', function () {
+    clearInterval(timer);
+  });
+})
 
-    var timer = setInterval(this.tick, 60000);
-  })
 
-  riot.mount('imagery');
-})(riot);
+var imagery = riot.mount('imagery');
 
-//  Here we mount riot to a custom tag on the page
-//  Options supplied here as key/value pairs
-//   will be available in the tag function above as 'opts'
+function imageUrl(image, view, date, time) {
+  return "url(http://api.usno.navy.mil/imagery/" + image + ".png?view=" + view + "&date=" + date + "&time=" + time + ")";
+}
 
-//  Function for returning utc dates and times
+(function (riot) {
+  riot.tag('timetable', '<h2 class="pull-left">{localDate}</h2>' +
+                        '<h2 class="pull-right">{localTime}</h2>', function(opts){
+    this.localTime  = opts.localTime;
+    this.localDate  = opts.localTime;
 
-// Begin refactoring variables e.g. imageString such that they are arguments
-// var imageString = "url(http://api.usno.navy.mil/imagery/earth.png?view=full&date=" + utcDate + "&time=" + utcTime + ")";
-function cycleImages(imageString) {
-  // Set a background image if there is none set
-  if(~document.getElementById("image").style.backgroundImage.indexOf("earth")){
-    document.getElementById("next-image").style.zIndex = "0"
-    document.getElementById("next-image").style.backgroundImage=imageString
+    this.tock = (function () {
+      this.localTime  = getTimes().localTime;
+      this.localDate  = getTimes().localDate;
+      this.localColor = this.localTime.replace(/:/g, '');
+      this.localTextColor = this.localDate.replace(/^20/i, '').replace(/\//g, '');
 
-    setTimeout(function() {
+      this.update({
+          localTime: this.localTime,
+          localDate: this.localDate
+      });
+
+      document.body.style.backgroundColor = "#" + padLeft(this.localColor, 6)
+      document.body.style.color = "#" + padLeft(this.localTextColor, 6)
+    }).bind(this)
+
+    var timer = setInterval(this.tock, 1000);
+
+    this.on('unmount', function () {
+      clearInterval(timer);
+    });
+  });
+
+  riot.mount('timetable',{
+    localTime: getTimes().localTime,
+    localDate: getTimes().localDate
+  });
+})(riot)
+
+function cycleImages(imageUrl, imageSubstring, imagery, justLoadIt) {
+  if(justLoadIt === true) {
+    document.getElementById("image").style.backgroundImage=imageUrl;
+    return
+  }
+
+  if(~document.getElementById("image").style.backgroundImage.indexOf(imageSubstring)){
+    document.getElementById("next-image").style.zIndex = "0";
+    document.getElementById("next-image").style.backgroundImage=imageUrl;
+
+    window.timeout = setTimeout(function() {
       document.getElementById("image").style.backgroundImage = "none";
-      document.getElementById("next-image").style.zIndex = "1"
-      document.getElementById("image").style.zIndex = "0"
+      document.getElementById("next-image").style.zIndex = "1";
+      document.getElementById("image").style.zIndex = "0";
     }, 15 * 1000)
   } else {
-    document.getElementById("image").style.zIndex = "0"
-    document.getElementById("image").style.backgroundImage=imageString
+    document.getElementById("image").style.zIndex = "0";
+    document.getElementById("image").style.backgroundImage=imageUrl;
 
-    setTimeout(function() {
+    window.timeout = setTimeout(function() {
       document.getElementById("next-image").style.backgroundImage = "none";
-      document.getElementById("image").style.zIndex = "1"
-      document.getElementById("next-image").style.zIndex = "0"
+      document.getElementById("image").style.zIndex = "1";
+      document.getElementById("next-image").style.zIndex = "0";
     }, 15 * 1000)
 
   }
@@ -68,7 +105,7 @@ function getTimes(){
     var yr = d.getFullYear();                   var yrUtc = utc.getFullYear();
 
     // Get time information                     // Get utc time information
-    var h  = d.getHours();                      var hUtc  = utc.getHours();
+    var hh = d.getHours();                      var hUtc  = utc.getHours();
     var mm = d.getMinutes();                    var mmUtc = utc.getMinutes();
     var s  = d.getSeconds();                    var sUtc  = utc.getSeconds();
 
@@ -77,13 +114,11 @@ function getTimes(){
     if (mo < 10) { mo = "0" + mo };             if (moUtc < 10) { moUtc = "0" + moUtc };
     if (mm < 10) { mm = "0" + mm };             if (mmUtc < 10) { mmUtc = "0" + mmUtc };
     if (s  < 10) { s  = "0" + s  };             if (sUtc  < 10) { sUtc  = "0" + sUtc  };
-    if (h  < 10) { h =  "0" + h  };
-
-    document.body.style.backgroundColor = "#" + h + mm + s;
+    if (hh < 10) { hh = "0" + hh };
 
     // Build date and time strings
-    var localDate = mo + "/" + dd + "/" + yr;
-    var localTime = h + ":" + mm + ':' + s;
+    var localDate = yr + "/" + mo + "/" + dd;
+    var localTime = hh + ":" + mm + ':' + s;
     var utcDate   = moUtc + "/" + ddUtc + "/" + yrUtc;
     var utcTime   = hUtc + ":" + mmUtc;
 
@@ -93,4 +128,18 @@ function getTimes(){
       utcDate:   utcDate,
       utcTime:   utcTime
     }
+}
+
+function padLeft(x, n){
+    var str = "" + x
+    var pad = new Array(n + 1).join("0") // "000000" for n = 6
+    var ans = pad.substring(0, pad.length - str.length) + str
+    return ans
+}
+
+function padRight(x, n){
+    var str = "" + x
+    var pad = new Array(n + 1).join("0") // "000000" for n = 6
+    var ans = str + pad.substring(0, pad.length - str.length)
+    return ans
 }

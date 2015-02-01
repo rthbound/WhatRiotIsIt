@@ -1,13 +1,13 @@
 body {
 	margin: 0;
 	padding: 0;
-	transition: all 2s;
+	transition: all 3.58s;
 }
 
 #image, #next-image {
   background-size: contain;
   background-position: 50% 40%;
-  background-repeat: repeat-x;
+  background-repeat: no-repeat;
   position: fixed;
   height: 100%;
   width: 100%;
@@ -22,7 +22,6 @@ timetable {
 h1, h2 {
 	font-family: "Open Sans";
 	font-weight: 400;
-	color: white;
 	text-align: center;
 	width: 100%;
 }
@@ -74,7 +73,7 @@ h2 {
 
 .centered {
   position: fixed;
-  top: 40%;
+  top: 7%;
   left: 50%;
   transform: translate(-50%, -50%);
 }
@@ -84,3 +83,4 @@ h2 {
     top: 55%;
   }
 }
+

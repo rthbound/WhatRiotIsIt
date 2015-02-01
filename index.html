@@ -7,11 +7,35 @@
 	<meta name="description" content="Playing with riot.js"/>
 	<meta name="mobile-web-app-capable" content="yes">
 	<link rel="icon" sizes="128x128" href="assets/favicon.png">
+	<link rel="stylesheet" type="text/css" href="assets/multi-select.css"/>
 	<link rel="stylesheet" type="text/css" href="assets/style.css"/>
 	<script src="assets/riot.js" defer></script>
+	<script src="assets/tags/multi-select.js" defer></script>
+
 	<script src="assets/script.js" defer></script>
 </head>
 <body>
+  <div class='wayonhigh'>
+    <multi-select class="centered" id="colors"></multi-select>
+  </div>
+  <!-- template -->
+  <textarea id="selectTag">
+    <ul class="selected">
+      <li each="{ selected }">
+        <div>
+          { name }
+        </div>
+
+      </li>
+      <li class="selector" onclick="{ show }">&nbsp;</li>
+    </ul>
+
+    <ul class="selections" show="{ showing }">
+      <li each="{ selections }">
+        <div onclick="{ parent.select }">{ name }</div>
+      </li>
+    </ul>
+  </textarea>
   <timetable>
     <timer start="0"></timer>
   </timetable>
