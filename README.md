@@ -8,7 +8,7 @@ limited amounts of fun
 - killed some display elements
 
 ### fun-time-3
-- pulled in the multi-select example... disabled the multi part of it
+- pulled in the [multi-select](http://plnkr.co/edit/NmcxgZ?p=preview) example... disabled the multi part of it
 - used the multiless-multi-select values to drive the WhatEarth[Sunrise/Sunset]IsIt behaviors
 
 ### fun-time-2
