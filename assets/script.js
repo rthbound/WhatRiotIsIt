@@ -1,94 +1,147 @@
-riot.tag('imagery', '',function (opts) {
-  this.utcDate = getTimes().utcDate;
-  this.utcTime = getTimes().utcTime;
+riot.tag('tabs',
+  '<div id="summoner" class="chooser { atTop: atTop } { choosing: choosing }" onclick="{ toggleSummoner }">' +
+    '...' +
+  '</div>' +
+  '<ul id="tabs" class="list--bare dockable { docked: docked }">' +
+    '<li each="{ tab, i in tabs }" class="{ tab: true, is-active: parent.isActiveTab(tab.ref) }" onclick="{ parent.toggleTab }">' +
+      '{tab.title}' +
+    '</li>' +
+  '</ul>' +
+  '<div class="tabContent dockable { docked: !docked }">' +
+    '<div each="{ tab, i in tabs }" class="{ tabContent__item: true, is-active: parent.isActiveTab(tab.ref) }">' +
+      '{tab.title}' +
+    '</div>' +
+  '</div>' +
+  '<div id="image" class="dockable { docked: !docked }"></div>' +
+  '<div id="next-image" class="dockable { docked: !docked }"></div>',
+  function(opts) {
+    this.currentTab = function() {
+      var t = this;
+      return t.tabs.filter(function(tab){ return tab.ref === t.activeTab })[0];
+    }.bind(this)
 
-  var img = imageUrl(colors.selected[0].imageString, colors.selected[0].view, this.utcDate, this.utcTime)
-  cycleImages(img, colors.selected[0].imageString, this)
+    this.tabs = opts.tabs
+    this.atTop = opts.atTop;
+    this.activeTab = opts.activeTab;
+    this.docked = opts.docked;
 
-  this.tick = (function () {
     this.utcDate = getTimes().utcDate;
     this.utcTime = getTimes().utcTime;
 
-    var img = imageUrl(colors.selected[0].imageString, colors.selected[0].view, this.utcDate, this.utcTime)
-
-    cycleImages(img, colors.selected[0].imageString, this)
-  }).bind(this);
-
-  var timer = setInterval(this.tick, 60000);
-
-  this.on('unmount', function () {
-    clearInterval(timer);
-  });
-})
 
 
-var imagery = riot.mount('imagery');
+    this.isActiveTab = function(tab) {
+      return this.activeTab === tab;
+    }.bind(this)
 
-function imageUrl(image, view, date, time) {
-  return "url(http://api.usno.navy.mil/imagery/" + image + ".png?view=" + view + "&date=" + date + "&time=" + time + ")";
-}
+      //return this.tabs.filter(function(tab) { tab.ref === this.activeTab })[0]
 
-(function (riot) {
-  riot.tag('timetable', '<h2 class="pull-left">{localDate}</h2>' +
-                        '<h2 class="pull-right">{localTime}</h2>', function(opts){
-    this.localTime  = opts.localTime;
-    this.localDate  = opts.localTime;
+    this.toggleTab = function(e) {
+      this.activeTab = e.item.tab.ref;
+      this.toggleSummoner();
+      return true;
+    }.bind(this)
 
-    this.tock = (function () {
-      this.localTime  = getTimes().localTime;
-      this.localDate  = getTimes().localDate;
-      this.localColor = this.localTime.replace(/:/g, '');
-      this.localTextColor = this.localDate.replace(/^20/i, '').replace(/\//g, '');
 
-      this.update({
-          localTime: this.localTime,
-          localDate: this.localDate
-      });
+    this.toggleSummoner = function(e) {
+      this.choosing = !this.choosing;
+      this.atTop = !this.atTop;
+      console.log('toggly');
+      this.docked = !this.docked;
 
-      document.body.style.backgroundColor = "#" + padLeft(this.localColor, 6)
-      document.body.style.color = "#" + padLeft(this.localTextColor, 6)
-    }).bind(this)
+      var img = imageUrl(this.currentTab().imageString, this.currentTab().view, this.utcDate, this.utcTime)
+      cycleImages(img, this.currentTab().imageString, true)
 
-    var timer = setInterval(this.tock, 1000);
+      this.update({ choosing: this.choosing, atTop: this.atTop, docked: this.docked });
+    }.bind(this)
+
+
+    this.tick = (function () {
+      this.utcDate = getTimes().utcDate;
+      this.utcTime = getTimes().utcTime;
+
+      var img = imageUrl(this.currentTab().imageString, this.currentTab().view, this.utcDate, this.utcTime)
+      cycleImages(img, this.currentTab().imageString)
+    }).bind(this);
+
+    var timer = setInterval(this.tick, 60000);
+
+    setTimeout(this.tick, 1000);
+
 
     this.on('unmount', function () {
       clearInterval(timer);
     });
-  });
-
-  riot.mount('timetable',{
-    localTime: getTimes().localTime,
-    localDate: getTimes().localDate
-  });
-})(riot)
-
-function cycleImages(imageUrl, imageSubstring, imagery, justLoadIt) {
-  if(justLoadIt === true) {
-    document.getElementById("image").style.backgroundImage=imageUrl;
-    return
   }
+)
 
-  if(~document.getElementById("image").style.backgroundImage.indexOf(imageSubstring)){
-    document.getElementById("next-image").style.zIndex = "0";
-    document.getElementById("next-image").style.backgroundImage=imageUrl;
-
-    window.timeout = setTimeout(function() {
-      document.getElementById("image").style.backgroundImage = "none";
-      document.getElementById("next-image").style.zIndex = "1";
-      document.getElementById("image").style.zIndex = "0";
-    }, 15 * 1000)
-  } else {
-    document.getElementById("image").style.zIndex = "0";
-    document.getElementById("image").style.backgroundImage=imageUrl;
-
-    window.timeout = setTimeout(function() {
-      document.getElementById("next-image").style.backgroundImage = "none";
-      document.getElementById("image").style.zIndex = "1";
-      document.getElementById("next-image").style.zIndex = "0";
-    }, 15 * 1000)
-
-  }
-}
+riot.mount('tabs', {
+  tabs: [{
+    title: "WhatEuropaIsIt",
+    imageString: "europa",
+    view: "full",
+    ref: 'tab1',
+  }, {
+    title: "WhatIoIsIt",
+    imageString: "io",
+    view: "full",
+    ref: 'tab2'
+  }, {
+    title: "WhatGanymedeIsIt",
+    imageString: "ganymede",
+    view: "full",
+    ref: 'tab3'
+  }, {
+    title: "WhatJupiterIsIt",
+    imageString: "jupiter",
+    view: "full",
+    ref: 'tab4'
+  }, {
+    title: "WhatMercuryIsIt",
+    imageString: "mercury",
+    view: "full",
+    ref: 'tab5'
+  }, {
+    title: "WhatMarsIsIt",
+    imageString: "mars",
+    view: "full",
+    ref: 'tab6'
+  }, {
+    title: "WhatVenusIsIt",
+    imageString: "venus",
+    view: "full",
+    ref: 'tab7'
+  }, {
+    title: "WhatCallistoIsIt",
+    imageString: "callisto",
+    view: "full",
+    ref: 'tab8'
+  }, {
+    title: "WhatMoonIsIt",
+    imageString: "moon",
+    view: "full",
+    ref: 'tab9'
+  }, {
+    title: "WhatSunsetIsIt",
+    imageString: "earth",
+    view: "set",
+    ref: 'tab10'
+  }, {
+    title: "WhatSunriseIsIt",
+    imageString: "earth",
+    view: "rise",
+    ref: 'tab11'
+  }, {
+    title: "WhatEarthIsIt",
+    imageString: "earth",
+    view: "full",
+    ref: 'tab12'
+  }],
+  activeTab: 'tab12',
+  choosing: false,
+  atTop: true,
+  docked: true
+});
 
 function getTimes(){
     var d   = new Date();
@@ -130,6 +183,72 @@ function getTimes(){
     }
 }
 
+function cycleImages(imageUrl, imageSubstring, justLoadIt) {
+  window.clearTimeout(window.timeout);
+  if(justLoadIt === true) {
+    document.getElementById("image").style.backgroundImage=imageUrl;
+    return
+  }
+
+  if(~document.getElementById("image").style.backgroundImage.indexOf(imageSubstring)){
+    document.getElementById("next-image").style.zIndex = "0";
+    document.getElementById("next-image").style.backgroundImage=imageUrl;
+
+    window.timeout = setTimeout(function() {
+      document.getElementById("image").style.backgroundImage = "none";
+      document.getElementById("next-image").style.zIndex = "1";
+      document.getElementById("image").style.zIndex = "0";
+    }, 15 * 1000)
+  } else {
+    document.getElementById("image").style.zIndex = "0";
+    document.getElementById("image").style.backgroundImage=imageUrl;
+
+    window.timeout = setTimeout(function() {
+      document.getElementById("next-image").style.backgroundImage = "none";
+      document.getElementById("image").style.zIndex = "1";
+      document.getElementById("next-image").style.zIndex = "0";
+    }, 15 * 1000)
+
+  }
+}
+
+function imageUrl(image, view, date, time) {
+  return "url(http://api.usno.navy.mil/imagery/" + image + ".png?view=" + view + "&date=" + date + "&time=" + time + ")";
+}
+
+(function (riot) {
+  riot.tag('timetable', '', function(opts){
+    this.localTime  = opts.localTime;
+    this.localDate  = opts.localTime;
+
+    this.tock = (function () {
+      this.localTime  = getTimes().localTime;
+      this.localDate  = getTimes().localDate;
+      this.localColor = this.localTime.replace(/:/g, '');
+      this.localTextColor = this.localDate.replace(/^20/i, '').replace(/\//g, '');
+
+      this.update({
+          localTime: this.localTime,
+          localDate: this.localDate
+      });
+
+      document.body.style.backgroundColor = "#" + padLeft(this.localColor, 6)
+      document.body.style.color = "#" + padLeft(this.localTextColor, 6)
+    }).bind(this)
+
+    var timer = setInterval(this.tock, 1000);
+
+    this.on('unmount', function () {
+      clearInterval(timer);
+    });
+  });
+
+  riot.mount('timetable',{
+    localTime: getTimes().localTime,
+    localDate: getTimes().localDate
+  });
+})(riot)
+
 function padLeft(x, n){
     var str = "" + x
     var pad = new Array(n + 1).join("0") // "000000" for n = 6
@@ -137,9 +256,3 @@ function padLeft(x, n){
     return ans
 }
 
-function padRight(x, n){
-    var str = "" + x
-    var pad = new Array(n + 1).join("0") // "000000" for n = 6
-    var ans = str + pad.substring(0, pad.length - str.length)
-    return ans
-}
