@@ -37,6 +37,8 @@ tabs {
   text-align: center;
   border-bottom-style: double;
   cursor: pointer;
+  color: #b4eae6;
+  border-color: black;
 }
 
 .dockable.docked {
