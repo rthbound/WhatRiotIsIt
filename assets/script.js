@@ -20,21 +20,17 @@ riot.tag('tabs',
       return t.tabs.filter(function(tab){ return tab.ref === t.activeTab })[0];
     }.bind(this)
 
-    this.tabs = opts.tabs
-    this.atTop = opts.atTop;
+    this.tabs      = opts.tabs
+    this.atTop     = opts.atTop;
     this.activeTab = opts.activeTab;
-    this.docked = opts.docked;
+    this.docked    = opts.docked;
 
     this.utcDate = getTimes().utcDate;
     this.utcTime = getTimes().utcTime;
 
-
-
     this.isActiveTab = function(tab) {
       return this.activeTab === tab;
     }.bind(this)
-
-      //return this.tabs.filter(function(tab) { tab.ref === this.activeTab })[0]
 
     this.toggleTab = function(e) {
       this.activeTab = e.item.tab.ref;
@@ -42,11 +38,10 @@ riot.tag('tabs',
       return true;
     }.bind(this)
 
-
     this.toggleSummoner = function(e) {
+      window.clearTimeout(window.timeout);
       this.choosing = !this.choosing;
       this.atTop = !this.atTop;
-      console.log('toggly');
       this.docked = !this.docked;
 
       var img = imageUrl(this.currentTab().imageString, this.currentTab().view, this.utcDate, this.utcTime)
@@ -54,7 +49,6 @@ riot.tag('tabs',
 
       this.update({ choosing: this.choosing, atTop: this.atTop, docked: this.docked });
     }.bind(this)
-
 
     this.tick = (function () {
       this.utcDate = getTimes().utcDate;
@@ -64,7 +58,7 @@ riot.tag('tabs',
       cycleImages(img, this.currentTab().imageString)
     }).bind(this);
 
-    var timer = setInterval(this.tick, 60000);
+    var timer = setInterval(this.tick, 30000);
 
     setTimeout(this.tick, 1000);
 
@@ -184,7 +178,6 @@ function getTimes(){
 }
 
 function cycleImages(imageUrl, imageSubstring, justLoadIt) {
-  window.clearTimeout(window.timeout);
   if(justLoadIt === true) {
     document.getElementById("image").style.backgroundImage=imageUrl;
     return
