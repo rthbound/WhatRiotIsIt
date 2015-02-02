@@ -2,6 +2,11 @@
 limited amounts of fun
 
 # Changelog
+### fun-time-4
+- try out [tabs](http://www.robertwpearce.com/blog/riotjs-example/) instead of multiless-multi-select ;)
+- let the images refresh a little faster
+- killed some display elements
+- 
 ### fun-time-3
 - pulled in the multi-select example... disabled the multi part of it
 - used the multiless-multi-select values to drive the WhatEarth[Sunrise/Sunset]IsIt behaviors
