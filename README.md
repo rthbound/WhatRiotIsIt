@@ -2,6 +2,9 @@
 limited amounts of fun
 
 # Changelog
+### fun-time-3
+- pulled in the multi-select example... disabled the multi part of it
+- used the multiless-multi-select values to drive the WhatEarth[Sunrise/Sunset]IsIt behaviors
 ### fun-time-2
 - ripped out the riot.js timer example
 - duplicated [WhatEarthIsIt](https://github.com/rthbound/WhatEarthIsIt) using a bit less code and a lot more riot
