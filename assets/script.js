@@ -10,8 +10,8 @@ riot.tag('tabs',
   '<div class="tabContent dockable { docked: !docked }">' +
     '<div each="{ tab, i in tabs }" class="{ tabContent__item: true, is-active: parent.isActiveTab(tab.ref) }">' +
       '{tab.title}' +
-      '<div id="{tab.ref}-image" class=""></div>' +
-      '<div id="{tab.ref}-next-image" class=""></div>' +
+      '<div id="{tab.ref}-image" class="{tab.title}"></div>' +
+      '<div id="{tab.ref}-next-image" class="{tab.title}"></div>' +
     '</div>' +
   '</div>',
   function(opts) {
@@ -106,32 +106,42 @@ riot.mount('tabs', {
     view: "full",
     ref: 'tab7'
   }, {
+    title: "WhatVenusIsItRadar",
+    imageString: "venus-radar",
+    view: "full",
+    ref: 'tab8'
+  }, {
     title: "WhatCallistoIsIt",
     imageString: "callisto",
     view: "full",
-    ref: 'tab8'
+    ref: 'tab9'
   }, {
     title: "WhatMoonIsIt",
     imageString: "moon",
     view: "full",
-    ref: 'tab9'
+    ref: 'tab10'
   }, {
     title: "WhatSunsetIsIt",
     imageString: "earth",
     view: "set",
-    ref: 'tab10'
+    ref: 'tab11'
   }, {
     title: "WhatSunriseIsIt",
     imageString: "earth",
     view: "rise",
-    ref: 'tab11'
+    ref: 'tab12'
+  }, {
+    title: "WhatSunshineIsIt",
+    imageString: "earth",
+    view: "sun",
+    ref: 'tab13'
   }, {
     title: "WhatEarthIsIt",
     imageString: "earth",
     view: "full",
-    ref: 'tab12'
+    ref: 'tab14'
   }],
-  activeTab: 'tab12',
+  activeTab: 'tab14',
   choosing: false,
   atTop: true,
   docked: true

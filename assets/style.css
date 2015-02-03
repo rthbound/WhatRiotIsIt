@@ -8,7 +8,9 @@ body {
   font-weight: 300;
   margin: 0;
   padding: 0;
-  color: #55AFA8; }
+	transition: all 1.2358;
+  color: #ca9469;
+}
 
 a {
   color: #B4EAE6;
@@ -16,18 +18,11 @@ a {
   text-decoration: none;
   border-bottom: 1px dotted; }
 
-iframe {
-  border: none;
-  width: 100%; }
-  iframe.iframe--tabs {
-    height: 550px; }
-  iframe.iframe--posts {
-    height: 400px; }
-
-.list--bare, .post__locations, .listing__comments {
+.list--bare {
   list-style: none;
   margin: 0;
-  padding: 0; }
+  padding: 0;
+}
 
 tabs {
   display: block; }
@@ -80,6 +75,7 @@ tabs {
   padding: 40px 20px 20px 20px;
 }
 
+/*  Tab Content  */
 .tabContent:not(.docked) {
   border: 1px solid;
   text-align: center;
@@ -91,8 +87,6 @@ tabs {
   height: 100%;
 
 }
-
-
 .tabContent__item {
   display: none; }
 .tabContent__item.is-active {
@@ -100,6 +94,7 @@ tabs {
   height: 100%;
   color: #B4EAE6;
 }
+
 div[id$="-image"] {
   background-size: contain;
   background-position: 50% 40%;
@@ -109,4 +104,19 @@ div[id$="-image"] {
   width: 100%;
   top: 3em;
   left: 0;
+}
+
+div[id$="-image"].WhatEarthIsIt {
+  background-repeat: repeat-x;
+}
+
+.loading {
+  z-index: -1;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+}
+.loading-content {
+  position: relative;
+  left: -50%;
 }
