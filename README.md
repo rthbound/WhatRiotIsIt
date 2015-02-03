@@ -2,6 +2,10 @@
 limited amounts of fun
 
 # Changelog
+### fun-time-5
+- Don't share image and next-image divs across all tabs, each tab has own
+- Change image and next-image styles to cover images whose ids end in image or next-image
+
 ### fun-time-4
 - try out [tabs](http://www.robertwpearce.com/blog/riotjs-example/) instead of multiless-multi-select ;)
 - let the images refresh a little faster
