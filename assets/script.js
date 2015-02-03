@@ -10,17 +10,12 @@ riot.tag('tabs',
   '<div class="tabContent dockable { docked: !docked }">' +
     '<div each="{ tab, i in tabs }" class="{ tabContent__item: true, is-active: parent.isActiveTab(tab.ref) }">' +
       '{tab.title}' +
+      '<div id="{tab.ref}-image" class=""></div>' +
+      '<div id="{tab.ref}-next-image" class=""></div>' +
     '</div>' +
-  '</div>' +
-  '<div id="image" class="dockable { docked: !docked }"></div>' +
-  '<div id="next-image" class="dockable { docked: !docked }"></div>',
+  '</div>',
   function(opts) {
-    this.currentTab = function() {
-      var t = this;
-      return t.tabs.filter(function(tab){ return tab.ref === t.activeTab })[0];
-    }.bind(this)
-
-    this.tabs      = opts.tabs
+    this.tabs      = opts.tabs;
     this.atTop     = opts.atTop;
     this.activeTab = opts.activeTab;
     this.docked    = opts.docked;
@@ -28,15 +23,20 @@ riot.tag('tabs',
     this.utcDate = getTimes().utcDate;
     this.utcTime = getTimes().utcTime;
 
+    this.currentTab = function() {
+      var t = this;
+      return t.tabs.filter(function(tab){ return tab.ref === t.activeTab })[0];
+    }.bind(this)
+
     this.isActiveTab = function(tab) {
       return this.activeTab === tab;
-    }.bind(this)
+    }.bind(this);
 
     this.toggleTab = function(e) {
       this.activeTab = e.item.tab.ref;
       this.toggleSummoner();
       return true;
-    }.bind(this)
+    }.bind(this);
 
     this.toggleSummoner = function(e) {
       window.clearTimeout(window.timeout);
@@ -44,23 +44,23 @@ riot.tag('tabs',
       this.atTop = !this.atTop;
       this.docked = !this.docked;
 
-      var img = imageUrl(this.currentTab().imageString, this.currentTab().view, this.utcDate, this.utcTime)
-      cycleImages(img, this.currentTab().imageString, true)
+      var img = imageUrl(this.currentTab().imageString, this.currentTab().view, this.utcDate, this.utcTime);
+      cycleImages(img, this.currentTab().imageString, this.activeTab, true);
 
       this.update({ choosing: this.choosing, atTop: this.atTop, docked: this.docked });
-    }.bind(this)
+    }.bind(this);
 
     this.tick = (function () {
       this.utcDate = getTimes().utcDate;
       this.utcTime = getTimes().utcTime;
 
       var img = imageUrl(this.currentTab().imageString, this.currentTab().view, this.utcDate, this.utcTime)
-      cycleImages(img, this.currentTab().imageString)
+      cycleImages(img, this.currentTab().imageString, this.activeTab)
     }).bind(this);
 
-    var timer = setInterval(this.tick, 30000);
+    var timer = setInterval(this.tick, 60000);
 
-    setTimeout(this.tick, 1000);
+    setTimeout(this.tick, 1235);
 
 
     this.on('unmount', function () {
@@ -177,30 +177,33 @@ function getTimes(){
     }
 }
 
-function cycleImages(imageUrl, imageSubstring, justLoadIt) {
+function cycleImages(imageUrl, imageSubstring, tabRef, justLoadIt) {
   if(justLoadIt === true) {
-    document.getElementById("image").style.backgroundImage=imageUrl;
+    document.getElementById(tabRef + "-image").style.backgroundImage=imageUrl;
+    document.getElementById(tabRef + "-image").style.zIndex = "1";
+    document.getElementById(tabRef + "-next-image").style.zIndex = "0";
+    document.getElementById(tabRef + "-next-image").style.backgroundImage = "none";
     return
   }
 
-  if(~document.getElementById("image").style.backgroundImage.indexOf(imageSubstring)){
-    document.getElementById("next-image").style.zIndex = "0";
-    document.getElementById("next-image").style.backgroundImage=imageUrl;
+  if(~document.getElementById(tabRef + "-image").style.backgroundImage.indexOf(imageSubstring)){
+    document.getElementById(tabRef + "-next-image").style.zIndex = "0";
+    document.getElementById(tabRef + "-next-image").style.backgroundImage=imageUrl;
 
     window.timeout = setTimeout(function() {
-      document.getElementById("image").style.backgroundImage = "none";
-      document.getElementById("next-image").style.zIndex = "1";
-      document.getElementById("image").style.zIndex = "0";
-    }, 15 * 1000)
+      document.getElementById(tabRef + "-image").style.backgroundImage = "none";
+      document.getElementById(tabRef + "-next-image").style.zIndex = "1";
+      document.getElementById(tabRef + "-image").style.zIndex = "0";
+    }, 30 * 1000)
   } else {
-    document.getElementById("image").style.zIndex = "0";
-    document.getElementById("image").style.backgroundImage=imageUrl;
+    document.getElementById(tabRef + "-image").style.zIndex = "0";
+    document.getElementById(tabRef + "-image").style.backgroundImage=imageUrl;
 
     window.timeout = setTimeout(function() {
-      document.getElementById("next-image").style.backgroundImage = "none";
-      document.getElementById("image").style.zIndex = "1";
-      document.getElementById("next-image").style.zIndex = "0";
-    }, 15 * 1000)
+      document.getElementById(tabRef + "-next-image").style.backgroundImage = "none";
+      document.getElementById(tabRef + "-image").style.zIndex = "1";
+      document.getElementById(tabRef + "-next-image").style.zIndex = "0";
+    }, 30 * 1000)
 
   }
 }

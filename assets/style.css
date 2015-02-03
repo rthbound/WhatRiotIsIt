@@ -100,8 +100,7 @@ tabs {
   height: 100%;
   color: #B4EAE6;
 }
-
-#image, #next-image {
+div[id$="-image"] {
   background-size: contain;
   background-position: 50% 40%;
   background-repeat: no-repeat;
