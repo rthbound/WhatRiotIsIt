@@ -2,6 +2,11 @@
 limited amounts of fun
 
 # Changelog
+## fun-time-6
+- Some css tweaks (allow horizontol repeating of WhatEarthIsIt)
+- Some css cleanup (cull stuff brought in from the tabs demo
+- Add a loading div (really just verbiage to be visible only when no images are present)
+
 ### fun-time-5
 - Don't share image and next-image divs across all tabs, each tab has own
 - Change image and next-image styles to cover images whose ids end in image or next-image
